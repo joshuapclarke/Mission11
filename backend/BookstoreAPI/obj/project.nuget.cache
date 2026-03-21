@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "sOq+jTyet2A=",
+  "success": true,
+  "projectFilePath": "/Users/joshclarke/School Work/Mission11/backend/BookstoreAPI/BookstoreAPI.csproj",
+  "expectedPackageFiles": [
+    "/Users/joshclarke/.nuget/packages/microsoft.aspnetcore.openapi/10.0.1/microsoft.aspnetcore.openapi.10.0.1.nupkg.sha512",
+    "/Users/joshclarke/.nuget/packages/microsoft.openapi/2.0.0/microsoft.openapi.2.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
