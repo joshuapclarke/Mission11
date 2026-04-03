@@ -30,11 +30,11 @@ export const BookList: React.FC<BookListProps> = ({ onViewCart }) => {
   // Consume the Cart Context so we can add items
   const cartContext = useContext(CartContext);
 
-  useEffect(() => {
+useEffect(() => {
     const fetchBooks = async () => {
       try {
-        // Build the URL dynamically based on state
-        let url = `http://localhost:40000/api/books?pageNum=${currentPage}`;
+        // UPDATED AZURE URL
+        let url = `https://mission13-clarke-backend-edcsdmayhfhnefbe.francecentral-01.azurewebsites.net/api/books?pageNum=${currentPage}`;
         if (selectedCategory) {
           url += `&category=${selectedCategory}`;
         }
