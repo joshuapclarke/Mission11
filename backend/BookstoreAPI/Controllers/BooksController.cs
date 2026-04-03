@@ -1,6 +1,6 @@
 using BookstoreAPI.Data;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore; // Added for async EF Core methods
+using Microsoft.EntityFrameworkCore;
 
 namespace BookstoreAPI.Controllers
 {
@@ -10,38 +10,31 @@ namespace BookstoreAPI.Controllers
     {
         private readonly BookstoreDbContext _context;
 
-        // Inject the database context via the constructor
         public BooksController(BookstoreDbContext context)
         {
             _context = context;
         }
 
-        // GET: api/Books
+        // GET ALL / PAGINATION 
         [HttpGet]
         public async Task<IActionResult> GetBooks(string? category, int pageNum = 1)
         {
-            int pageSize = 10; // You can adjust how many books show per page
-
-            // Start with the base query
+            int pageSize = 10;
             var query = _context.Books.AsQueryable();
 
-            // Apply category filter if one is provided
             if (!string.IsNullOrEmpty(category))
             {
-                query = query.Where(b => b.Category == category);
+                // UPDATE: Check both the Category AND Classification columns
+                query = query.Where(b => b.Category == category || b.Classification == category);
             }
 
-            // Get the total count for pagination math before we paginate the data
             var totalItems = await query.CountAsync();
-
-            // Fetch the paginated results
             var books = await query
-                .OrderBy(b => b.Title) // Assuming your Book model has a Title property
+                .OrderBy(b => b.Title)
                 .Skip((pageNum - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
 
-            // Structure the JSON response for the React frontend
             var response = new 
             {
                 Books = books,
@@ -56,6 +49,87 @@ namespace BookstoreAPI.Controllers
             };
 
             return Ok(response);
+        }
+
+        //  GET SINGLE BOOK (For editing) 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetBook(int id)
+        {
+            var book = await _context.Books.FindAsync(id);
+
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(book);
+        }
+
+        //  CREATE BOOK 
+        [HttpPost]
+        public async Task<IActionResult> AddBook([FromBody] Book book)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _context.Books.Add(book);
+            await _context.SaveChangesAsync();
+
+            // Returns a 201 Created status and the location of the new resource
+            return CreatedAtAction(nameof(GetBook), new { id = book.BookId }, book);
+        }
+
+        // UPDATE BOOK
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateBook(int id, [FromBody] Book book)
+        {
+            if (id != book.BookId)
+            {
+                return BadRequest("The ID in the URL does not match the ID of the book object.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _context.Entry(book).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_context.Books.Any(e => e.BookId == id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent(); // 204 No Content is standard for a successful PUT
+        }
+
+        // DELETE BOOK 
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteBook(int id)
+        {
+            var book = await _context.Books.FindAsync(id);
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            _context.Books.Remove(book);
+            await _context.SaveChangesAsync();
+
+            return NoContent(); // 204 No Content is standard for a successful DELETE
         }
     }
 }
