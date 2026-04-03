@@ -16,9 +16,10 @@ export const AdminBooks = () => {
         classification: '', category: '', pageCount: 0, price: 0
     });
 
-    const fetchBooks = async (page: number) => {
+const fetchBooks = async (page: number) => {
         try {
-            const response = await fetch(`http://localhost:40000/api/books?pageNum=${page}`);
+            // UPDATED AZURE URL
+            const response = await fetch(`https://mission13-clarke-backend-edcsdmayhfhnefbe.francecentral-01.azurewebsites.net/api/books?pageNum=${page}`);
             const result = await response.json();
             
             // Log the result to the browser console so we can inspect it
@@ -57,7 +58,8 @@ export const AdminBooks = () => {
     const handleDeleteClick = async (id: number) => {
         if (window.confirm('Are you sure you want to delete this book?')) {
             try {
-                const response = await fetch(`http://localhost:40000/api/books/${id}`, {
+                // UPDATED AZURE URL
+                const response = await fetch(`https://mission13-clarke-backend-edcsdmayhfhnefbe.francecentral-01.azurewebsites.net/api/books/${id}`, {
                     method: 'DELETE',
                 });
                 
@@ -75,9 +77,11 @@ export const AdminBooks = () => {
         e.preventDefault();
         
         const isEditing = formData.bookId !== 0;
+        
+        // UPDATED AZURE URLS
         const url = isEditing 
-            ? `http://localhost:40000/api/books/${formData.bookId}` 
-            : 'http://localhost:40000/api/books';
+            ? `https://mission13-clarke-backend-edcsdmayhfhnefbe.francecentral-01.azurewebsites.net/api/books/${formData.bookId}` 
+            : `https://mission13-clarke-backend-edcsdmayhfhnefbe.francecentral-01.azurewebsites.net/api/books`;
             
         try {
             const response = await fetch(url, {
