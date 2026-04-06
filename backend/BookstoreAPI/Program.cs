@@ -16,7 +16,7 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:40001") // Only allow your specific frontend port
+        policy.WithOrigins("https://brave-tree-03bc02e1e.7.azurestaticapps.net") // Only allow your specific frontend port
             .AllowAnyMethod()
             .AllowAnyHeader();
     });
